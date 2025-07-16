@@ -78,11 +78,74 @@ class StructuredOutputAgent:
 - **Production Features**: Built-in tracing, async execution, automatic conversation history
 - **Tracing Docs**: https://openai.github.io/openai-agents-python/tracing/
 
+#### Third-Party Model Integration Methods (2025)
+
+##### 1. OpenAI-Compatible API Configuration
+- **Global Client Setup**: Use `set_default_openai_client()` for system-wide configuration
+- **Custom Client Example**:
+  ```python
+  from openai import AsyncOpenAI
+  from agents import set_default_openai_client
+  
+  custom_client = AsyncOpenAI(
+      base_url="https://api.deepseek.com",
+      api_key="your-api-key"
+  )
+  set_default_openai_client(custom_client)
+  ```
+
+##### 2. Per-Agent Model Configuration
+- **Direct Model Specification**: Configure models individually per agent
+- **Mixed Model Workflows**: Use different models for different agents within same workflow
+- **DeepSeek Example**:
+  ```python
+  deepseek_client = AsyncOpenAI(
+      base_url="https://api.deepseek.com",
+      api_key=deepseek_api_key
+  )
+  
+  agent = Agent(
+      name="DeepSeek Agent",
+      instructions="Your instructions here",
+      model=OpenAIChatCompletionsModel(
+          model="deepseek-chat",
+          openai_client=deepseek_client,
+      ),
+  )
+  ```
+
 #### Third-Party API Integration Patterns
 - **DeepSeek Compatibility**: Full OpenAI API compatibility via base URL change
-- **Configuration Method**: Environment variables preferred over direct client injection
+- **Configuration Method**: Multiple approaches (environment variables, client injection)
 - **Model Mapping**: Provider-specific model names (`deepseek-chat`, `gpt-4o-mini`)
 - **Industry Trend**: Most providers now offer OpenAI-compatible endpoints
+
+#### Critical API Compatibility Issue (New Learning)
+- **Problem**: OpenAI Agents SDK defaults to Responses API, but third-party providers like DeepSeek only support Chat Completions API
+- **Symptom**: 404 errors when using third-party providers with default SDK configuration
+- **Solution**: Must explicitly switch to Chat Completions API for third-party providers:
+  ```python
+  from agents import set_default_openai_api
+  
+  # Required for third-party providers
+  if base_url:  # Third-party provider detected
+      set_default_openai_api("chat_completions")
+  ```
+- **Impact**: Without this fix, all third-party integrations will fail with 404 errors
+
+#### Advanced Configuration Options
+- **API Selection**: Switch between Responses API and Chat Completions API
+- **Tracing Configuration**: 
+  - Disable: `set_tracing_disabled(True)`
+  - Custom API key: `set_tracing_export_api_key()`
+- **Logging Controls**: Environment variables to disable sensitive data logging
+- **Model-Specific Settings**: Configure temperature, extra_args via ModelSettings
+
+#### Provider-Specific Notes
+- **DeepSeek Models**: `deepseek-chat`, `deepseek-reasoner`
+- **Base URLs**: `https://api.deepseek.com` or `https://api.deepseek.com/v1`
+- **Feature Limitations**: Not all providers support structured outputs, multimodal inputs
+- **Best Practice**: Use single model shape per workflow for consistent feature support
 
 #### Structured Output Best Practices
 - **Schema Generation**: Leverage Pydantic's `model_json_schema()` for LLM prompts

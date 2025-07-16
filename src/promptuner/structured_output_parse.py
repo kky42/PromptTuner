@@ -2,7 +2,8 @@ import os
 import asyncio
 from typing import Type, TypeVar
 from pydantic import BaseModel
-from agents import Agent, Runner, set_tracing_disabled
+from agents import Agent, Runner, set_tracing_disabled, set_default_openai_api
+from openai import AsyncOpenAI
 
 # Disable tracing globally
 set_tracing_disabled(True)
@@ -33,6 +34,8 @@ class StructuredOutputAgent:
             os.environ["OPENAI_API_KEY"] = api_key
         if base_url:
             os.environ["OPENAI_BASE_URL"] = base_url
+            # Use Chat Completions API for third-party providers
+            set_default_openai_api("chat_completions")
             
         # Set default model based on provider
         if not model:
