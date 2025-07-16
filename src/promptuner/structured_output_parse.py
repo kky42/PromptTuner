@@ -14,14 +14,14 @@ T = TypeVar('T', bound=BaseModel)
 class StructuredOutputAgent:
     """Agent that extracts structured output from queries using Pydantic models."""
     
-    def __init__(self, api_key: str = None, base_url: str = None, model: str = None):
+    def __init__(self, model: str, api_key: str = None, base_url: str = None):
         """
         Initialize the agent with API credentials.
         
         Args:
+            model: Model name to use (required)
             api_key: API key. If None, will use DEEPSEEK_API_KEY or OPENAI_API_KEY env var.
             base_url: Base URL for API. If None, will use DEEPSEEK_BASE_URL env var.
-            model: Model name. If None, will use deepseek-chat for DeepSeek or gpt-4o-mini for OpenAI.
         """
         # Set up API credentials - prefer DeepSeek
         if not api_key:
@@ -36,13 +36,6 @@ class StructuredOutputAgent:
             os.environ["OPENAI_BASE_URL"] = base_url
             # Use Chat Completions API for third-party providers
             set_default_openai_api("chat_completions")
-            
-        # Set default model based on provider
-        if not model:
-            if base_url and "deepseek" in base_url.lower():
-                model = "deepseek-chat"
-            else:
-                model = "gpt-4o-mini"
         
         self.agent = Agent(
             name="StructuredExtractor",
@@ -67,6 +60,8 @@ class StructuredOutputAgent:
         """
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
+        
+        import json
         
         # Build the prompt
         schema = model_class.model_json_schema()
@@ -98,47 +93,34 @@ Return only valid JSON that matches the schema exactly.
                 content = str(result)
             
             # Extract JSON from response
-            json_data = self._extract_json_from_text(content)
+            start_idx = content.find('{')
+            if start_idx == -1:
+                raise ValueError("No JSON found in response")
+            
+            # Find matching closing brace
+            brace_count = 0
+            end_idx = -1
+            
+            for i in range(start_idx, len(content)):
+                if content[i] == '{':
+                    brace_count += 1
+                elif content[i] == '}':
+                    brace_count -= 1
+                    if brace_count == 0:
+                        end_idx = i
+                        break
+            
+            if end_idx == -1:
+                raise ValueError("No matching closing brace found")
+            
+            json_text = content[start_idx:end_idx + 1]
+            json_data = json.loads(json_text)
             
             # Validate and create model instance
             return model_class.model_validate(json_data)
             
         except Exception as e:
             raise ValueError(f"Failed to extract structured output: {e}")
-    
-    def _extract_json_from_text(self, text: str) -> dict:
-        """Extract JSON from text response."""
-        import json
-        
-        text = text.strip()
-        
-        # Find JSON in text
-        start_idx = text.find('{')
-        if start_idx == -1:
-            raise ValueError("No JSON found in response")
-        
-        # Find matching closing brace
-        brace_count = 0
-        end_idx = -1
-        
-        for i in range(start_idx, len(text)):
-            if text[i] == '{':
-                brace_count += 1
-            elif text[i] == '}':
-                brace_count -= 1
-                if brace_count == 0:
-                    end_idx = i
-                    break
-        
-        if end_idx == -1:
-            raise ValueError("No matching closing brace found")
-        
-        json_text = text[start_idx:end_idx + 1]
-        
-        try:
-            return json.loads(json_text)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON in response: {e}")
 
 
 if __name__ == "__main__":
@@ -160,9 +142,9 @@ if __name__ == "__main__":
         exit(1)
     
     agent = StructuredOutputAgent(
+        model="deepseek-chat",
         api_key=deepseek_key,
-        base_url=deepseek_url, 
-        model="deepseek-chat"
+        base_url=deepseek_url
     )
     
     # Simple test
