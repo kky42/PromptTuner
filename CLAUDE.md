@@ -1,9 +1,9 @@
 # CLAUDE CODE
 
 ## UNIVERSAL RULE
-- Don't remove or update `UNIVERSAL RULE` section unless user requests
-- Add new content under `ADDITIONAL` section in each section, don't remove or modify original content unless user requests
-- Read `docs/CLAUDE_NOTES.md` before working, If it doesn't exist, please create it first. Whenever you receive helps from users, external websites and documentations, make sure to record the key information in the file to guide future work.
+- Don't remove or update `UNIVERSAL RULE`, `PRJECT`, `DEVELOPMENT` section unless user requests
+- Add new content under `NOTE` section
+- Whenever you receive helps from users, external websites and documentations, make sure to record the key information in `NOTE` section to guide future work.
 
 ## PROJECT
 
@@ -15,9 +15,6 @@ A Lightweight Tool for Prompt Optimization.
 - python 3.11
 - OpenAI Agents Python SDK
 - pytest
-
-### ADDITIONAL
-
 
 ## DEVELOPMENT
 
@@ -49,4 +46,4 @@ A Lightweight Tool for Prompt Optimization.
 - Don't test all modules with `pytest` command, use `pytest [file_name]` instead
 - Write tests in `tests` directory, name the test file as `test_[module_name].py`
 
-### ADDITIONAL
+## NOTE
