@@ -2,7 +2,7 @@
 
 ## UNIVERSAL RULE
 - Don't remove or update `UNIVERSAL RULE`, `PRJECT`, `DEVELOPMENT` section unless user requests
-- Read `docs\NOTES.md` file before starting work. Create it if it doesn't exist.
+- Read `docs\NOTE.md` file before starting work. Create it if it doesn't exist.
 
 ## PROJECT
 
