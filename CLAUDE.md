@@ -2,8 +2,7 @@
 
 ## UNIVERSAL RULE
 - Don't remove or update `UNIVERSAL RULE`, `PRJECT`, `DEVELOPMENT` section unless user requests
-- Add new content under `NOTE` section
-- Whenever you receive helps from users, external websites and documentations, make sure to record the key information in `NOTE` section to guide future work.
+- Read `docs\NOTES.md` file before starting work. Create it if it doesn't exist.
 
 ## PROJECT
 
