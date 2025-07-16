@@ -12,7 +12,7 @@ A Lightweight Tool for Prompt Optimization.
 
 ### TECH STACK
 - python 3.11
-- OpenAI Agents Python SDK
+- openai sdk
 - pytest
 
 ## DEVELOPMENT
