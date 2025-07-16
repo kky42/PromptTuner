@@ -10,10 +10,13 @@ dependencies = [
     "langchain-core>=0.3.68",
     "langchain-openai>=0.3.28",
     "langgraph>=0.5.3",
+    "openai>=1.95.1",
+    "openai-agents>=0.2.0",
     "pytest>=8.4.1",
     "pytest-asyncio>=1.0.0",
     "pytest-cov>=6.2.1",
     "pytest-mock>=3.14.1",
+    "python-dotenv>=1.1.1",
 ]
 
 [tool.pytest.ini_options]
